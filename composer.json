@@ -1,0 +1,22 @@
+{
+    "name": "tox2ik/php-utility-functions",
+    "description": "Functions that I seem to need in many projects",
+    "type": "utility",
+    "license": "public-domain",
+    "authors": [
+        {
+            "name": "jaroslav",
+            "email": "jazzoslav@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+       "files": [
+	   "src/tox2ik-util-functions.php"
+       ],
+       "psr-4": {
+	       "Genja\\": "src/Genja"
+       }
+    }
+}
