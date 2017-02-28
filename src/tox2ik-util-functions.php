@@ -31,8 +31,7 @@ function checkbox_boolean($parameter) {
  * Reindex all values on a key from same array.
  * array_reindex({0: {a.i:x}, 1: {a.i:y}, 2: {a.i:z} }, 'i') => {x: {a.i:x}, y: {a.i:y}, z: {a.i:z} }
 */
-function array_reindex($input, $keyName)
-{
+function array_reindex($input, $keyName) {
 	$i = null;
 	$iso = false;
 	$isa = false;
@@ -44,4 +43,32 @@ function array_reindex($input, $keyName)
 	}
 	return $out;
 
+}
+
+
+/**
+ * Parse variations of ISO8601 strings.
+ * @param $isoDate string time and date and timezone
+ * @param null $dtZone create date with this timezone. Fall back to default if not specified.
+ * @return bool|DateTime false if unable to parse.
+ */
+function createDateTimeFromIso8601Format($isoDate, $dtZone = null) {
+	static $defaultZone;
+    if ($dtZone == null) {
+        if ($defaultZone == null) {
+			$defaultZone = new \DateTimeZone(date_default_timezone_get());
+		}
+		$dtZone = $defaultZone;
+    }
+    $format = array(
+        'Y-m-d\TH:i:s.uP', // js: (new Date).toISOString()
+        'Y-m-d\TH:i:s.u',
+        'Y-m-d\TH:i:sP',
+        'Y-m-d\TH:i:s',
+        DATE_ATOM,
+        \DateTime::ISO8601,
+    );
+
+    while (! $date = \DateTime::createFromFormat(array_shift($format), $isoDate, $dtZone)) {}
+    return $date;
 }
