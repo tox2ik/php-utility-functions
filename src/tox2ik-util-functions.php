@@ -30,8 +30,8 @@ function checkbox_boolean($parameter) {
 /**
  * Reindex all values on a key from same array.
  * array_reindex({0: {a.i:x}, 1: {a.i:y}, 2: {a.i:z} }, 'i') => {x: {a.i:x}, y: {a.i:y}, z: {a.i:z} }
-*/
-function array_reindex($input, $keyName) {
+ */
+function array_reindex($input, $keyName = 'id') {
 	$i = null;
 	$iso = false;
 	$isa = false;
