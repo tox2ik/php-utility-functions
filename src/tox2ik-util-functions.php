@@ -72,3 +72,32 @@ function createDateTimeFromIso8601Format($isoDate, $dtZone = null) {
     while (! $date = \DateTime::createFromFormat(array_shift($format), $isoDate, $dtZone)) {}
     return $date;
 }
+
+
+/**
+ * Set up the global $_REQUEST to avoid undefined index notices.
+ *
+ * e.g.
+ *
+ *     expectRequestParameters('do', 'id', 'action');
+ */
+function expectRequestParameters() {
+    foreach (func_get_args() as $e) {
+        if (is_array($e)) { expectRequestParameters($e); }
+        else { if (!isset($_REQUEST[$e])) $_REQUEST[$e] = null; }
+    }
+}
+
+function expectGetParameters() {
+    foreach (func_get_args() as $e) {
+        if (is_array($e)) { expectGetParameters($e); }
+        else { if (!isset($_GET[$e])) $_GET[$e] = null; }
+    }
+}
+
+function expectPostParameters() {
+    foreach (func_get_args() as $e) {
+        if (is_array($e)) { expectPostParameters($e); }
+        else { if (!isset($_POST[$e])) $_POST[$e] = null; }
+    }
+}
