@@ -15,7 +15,7 @@ namespace Genja\Caching;
 Class RevisionResource
 {
 
-	/**
+    /**
      * Append the mtime of a file / url before .(min).(js|css),
      * but avoid non-local resources.
      *
@@ -23,7 +23,7 @@ Class RevisionResource
      * degendencies", such as the case may be with WordPress, where you can
      * pass all of them to a "filter".
      * 
-	 */
+     */
     public static function modifyUrlWithMtime($url)
     {
         $uParts = parse_url($url);
@@ -79,22 +79,26 @@ Class RevisionResource
      */
     public static function mTime($fileUrl, $documentRoot = null, $refreshTimeout = 10800)
     {
-        //if (empty($documentRoot) and defined('ABSPATH')) { $documentRoot = ABSPATH; } // wordpress
-		if (empty($documentRoot) and defined('BASE_PATH')) { $documentRoot = BASE_PATH; } // sol5
+        if (empty($documentRoot) and defined('ABSPATH')) { $documentRoot = ABSPATH; } // wordpress
+        if (empty($documentRoot) and defined('BASE_PATH')) { $documentRoot = BASE_PATH; } // sol5
+        if (empty($documentRoot) and defined('ROOT_PATH')) { $documentRoot = ROOT_PATH; } // veiboli
 
         $urlParts = parse_url($fileUrl);
         $words = explode('.', $fileUrl);
         $ext = array_pop($words);
         $min = array_pop($words);
-		if (! ((strtolower($ext) == 'json') or (strtolower($ext) == 'js') or (strtolower($ext) == 'css'))) {
-			return $fileUrl;
-		}
-        if (! isset($urlParts['path'])) {
-			return $fileUrl;
-
+        if (! ((strtolower($ext) == 'json') or (strtolower($ext) == 'js') or (strtolower($ext) == 'css'))) {
+            return $fileUrl;
         }
-        $absPath = $documentRoot . $urlParts['path'];
-		$stat = stat($absPath);
+        if (! isset($urlParts['path'])) {
+            return $fileUrl;
+        }
+
+        if (!is_file($absPath = $documentRoot . $urlParts['path'])) {
+            $absPath = "$documentRoot/htdocs" . $urlParts['path'];
+        }
+
+        $stat = is_file($absPath) ? stat($absPath) : null;
         $mtime = is_file($absPath)
             ? $stat['mtime']
             : sprintf('%010d', time() / $refreshTimeout);
