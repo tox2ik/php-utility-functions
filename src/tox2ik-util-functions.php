@@ -101,3 +101,23 @@ function expectPostParameters() {
         else { if (!isset($_POST[$e])) $_POST[$e] = null; }
     }
 }
+
+
+function jPretty($e) {
+    $out = null;
+    if (version_compare(phpversion(), '5.4', '>=')) {
+        $out = json_encode($e, JSON_PRETTY_PRINT);
+    } else {
+        $out = str_replace('{', "{\n", json_encode($e));
+    }
+    return $out;
+
+}
+
+
+/**
+ * Append mtime to a file path or a "local" url
+ */
+function amtime($url) {
+	return \Genja\Caching\RevisionResource::modifyUrlWithMtime($url);
+}
