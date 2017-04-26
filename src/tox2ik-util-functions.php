@@ -121,3 +121,31 @@ function jPretty($e) {
 function amtime($url) {
 	return \Genja\Caching\RevisionResource::modifyUrlWithMtime($url);
 }
+
+
+
+function assert2($assertion, $expectation) {
+    if (version_compare(phpversion(), '5.4.8', '>=')) {
+        return assert($assertion, $expectation);
+    }
+    return assert($assertion);
+}
+
+/**
+ * Execute an OS command and write to error log if it is not happy.
+ * @param $shellCommand string is run as is. You can add stderr (2>&1) redirection if needed.
+ * @param $reportIfSuccess boolean write to the log even if exit status is 0.
+ */
+function execWithReport($shellCommand, $reportIfSuccess = false) {
+	$output = array();
+	exec($shellCommand, $output, $exitCode);
+	if ($exitCode != 0 || $reportIfSuccess) {
+		$outLines = implode("\n", $output);
+		$failed = $exitCode == 0 ? '' : ' failed';
+		$out = "Command$failed: $shellCommand";
+		if ($outLines) {
+			$out .= "\nOutput;\n$outLines";
+		}
+		error_log($out);
+	}
+}
