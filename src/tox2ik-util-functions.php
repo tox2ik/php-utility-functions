@@ -149,3 +149,13 @@ function execWithReport($shellCommand, $reportIfSuccess = false) {
 		error_log($out);
 	}
 }
+
+/**
+ * replace the first occurance of $needle with $replacement in $haystack
+ * @return string replaced or original string.
+ */
+function str_replace_first($replacement, $needle, $haystack) {
+    return (($pos = strpos($haystack, $needle)) === false)
+        ? $haystack
+        : substr_replace($haystack, $replacement, $pos, strlen($needle));
+}
