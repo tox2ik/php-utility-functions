@@ -82,6 +82,8 @@ Class RevisionResource
         if (empty($documentRoot) and defined('ABSPATH')) { $documentRoot = ABSPATH; } // wordpress
         if (empty($documentRoot) and defined('BASE_PATH')) { $documentRoot = BASE_PATH; } // sol5
         if (empty($documentRoot) and defined('ROOT_PATH')) { $documentRoot = ROOT_PATH; } // veiboli
+        if (empty($documentRoot) and isset($GLOBALS['CORDA_ROOT'])) { $documentRoot = $GLOBALS['CORDA_ROOT']; }
+
 
         $urlParts = parse_url($fileUrl);
         $words = explode('.', $fileUrl);
@@ -97,6 +99,7 @@ Class RevisionResource
         if (!is_file($absPath = $documentRoot . $urlParts['path'])) {
             $absPath = "$documentRoot/htdocs" . $urlParts['path'];
         }
+
 
         $stat = is_file($absPath) ? stat($absPath) : null;
         $mtime = is_file($absPath)
