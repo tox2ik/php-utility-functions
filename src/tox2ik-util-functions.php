@@ -83,21 +83,21 @@ function createDateTimeFromIso8601Format($isoDate, $dtZone = null) {
  */
 function expectRequestParameters() {
     foreach (func_get_args() as $e) {
-        if (is_array($e)) { expectRequestParameters($e); }
+        if (is_array($e)) { foreach($e as $ii => $ee) expectRequestParameters($ee); }
         else { if (!isset($_REQUEST[$e])) $_REQUEST[$e] = null; }
     }
 }
 
 function expectGetParameters() {
     foreach (func_get_args() as $e) {
-        if (is_array($e)) { expectGetParameters($e); }
+        if (is_array($e)) { foreach($e as $ii => $ee) expectGetParameters($ee); }
         else { if (!isset($_GET[$e])) $_GET[$e] = null; }
     }
 }
 
 function expectPostParameters() {
     foreach (func_get_args() as $e) {
-        if (is_array($e)) { expectPostParameters($e); }
+        if (is_array($e)) { foreach($e as $ii => $ee) expectPostParameters($ee); }
         else { if (!isset($_POST[$e])) $_POST[$e] = null; }
     }
 }
