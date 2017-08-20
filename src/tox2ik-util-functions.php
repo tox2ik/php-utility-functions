@@ -159,3 +159,27 @@ function str_replace_first($replacement, $needle, $haystack) {
         ? $haystack
         : substr_replace($haystack, $replacement, $pos, strlen($needle));
 }
+
+/**
+ * Parse ini bytes / kilobytes / gigabytes
+ * @return int
+ */
+function ini_size_as_bytes($ini_v) {
+   $ini_v = trim($ini_v);
+   $s = [ /* 'y' => 1<<80, 'z' => 1<<70, */
+       'e' => 1<<60, 'p' => 1<<50, 't' => 1<<40,
+       'g' => 1<<30, 'm' => 1<<20, 'k' => 1<<10, 'b' => 1<<0
+   ];
+   $mul = isset($s[strtolower(substr($ini_v, -1))]) ? $s[strtolower(substr($ini_v,-1))] : false;
+   return intval($ini_v) * ($mul ?: 1);
+}
+
+/**
+ * get the actual max files size (as configured)
+ * @return int bytes
+ */
+function ini_get_upload_size() {
+    $maxPost = ini_size_as_bytes(ini_get('post_max_size'));
+    $maxUpload = ini_size_as_bytes(ini_get('upload_max_filesize'));
+    return min($maxPost, $maxUpload) ?: max($maxUpload, $maxPost);
+}
