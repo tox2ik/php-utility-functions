@@ -154,7 +154,7 @@ function execWithReport($shellCommand, $reportIfSuccess = false) {
  * replace the first occurance of $needle with $replacement in $haystack
  * @return string replaced or original string.
  */
-if (! function_exists('str_replace_first') {
+if (! function_exists('str_replace_first')) {
     function str_replace_first($replacement, $needle, $haystack) {
         return (($pos = strpos($haystack, $needle)) === false)
             ? $haystack
