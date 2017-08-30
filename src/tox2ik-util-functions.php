@@ -3,6 +3,7 @@
 /**
  * Convert a submitted checkbox to a boolean.
  */
+if (!function_exists(checkbox_boolean($parameter)) {
 function checkbox_boolean($parameter) {
     if (is_bool($parameter)) return $parameter;
     if (is_object($parameter)) return count(get_object_vars($parameter)) !== 0;
@@ -25,6 +26,7 @@ function checkbox_boolean($parameter) {
             break;
     }
     return false;
+}
 }
 
 /**
