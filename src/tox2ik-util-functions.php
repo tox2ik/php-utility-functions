@@ -104,6 +104,19 @@ function expectPostParameters() {
     }
 }
 
+if (! function_exists('jsonDecode')) {
+    /**
+     * @param string $json
+     * @return mixed
+     */
+    function jsonDecode($json) {
+        $result = json_decode($json);
+        if (!empty($json) && $result === null && json_last_error() != JSON_ERROR_NONE) {
+            error_log(sprintf( '%s: Error while decoding; %s', __FUNCTION__, json_last_error()));
+        }
+    }
+}
+
 
 function jPretty($e) {
     $out = null;
