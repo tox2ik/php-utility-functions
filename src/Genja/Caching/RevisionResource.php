@@ -11,6 +11,16 @@ namespace Genja\Caching;
  * browser-cache as well as forcing them to update when we want to.
  *
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching (Revved resources)
+ *
+ *
+ * Apache 2.4 ModRewrite (.htaccess) rule:
+ *
+ *     <IfModule mod_rewrite.c>
+ *         RewriteEngine On
+ *         RewriteBase /
+ *         RewriteRule ^(.*)\.[\d]{10}(.min)?\.(css|js)$ $1$2.$3 [L]
+ *     </IfModule>
+ *
  */
 Class RevisionResource
 {
@@ -83,6 +93,7 @@ Class RevisionResource
         if (empty($documentRoot) and defined('BASE_PATH')) { $documentRoot = BASE_PATH; } // sol5
         if (empty($documentRoot) and defined('ROOT_PATH')) { $documentRoot = ROOT_PATH; } // veiboli
         if (empty($documentRoot) and isset($GLOBALS['CORDA_ROOT'])) { $documentRoot = $GLOBALS['CORDA_ROOT']; }
+        if (empty($documentRoot) and isset($_SERVER['DOCUMENT_ROOT'])) { $documentRoot = $_SERVER['DOCUMENT_ROOT']; }
 
 
         $urlParts = parse_url($fileUrl);
