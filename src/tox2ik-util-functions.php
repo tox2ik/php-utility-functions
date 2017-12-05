@@ -200,3 +200,35 @@ function ini_get_upload_size() {
     $maxUpload = ini_size_as_bytes(ini_get('upload_max_filesize'));
     return min($maxPost, $maxUpload) ?: max($maxUpload, $maxPost);
 }
+
+
+function serverProtocolHost($protocolRelative = false) {
+    $p = @$_SERVER['REQUEST_SCHEME'];
+    $host = @$_SERVER['HTTP_HOST'];
+    $proto = $protocolRelative ? '//' : "$p://";
+    return "$proto$host";
+}
+
+/**
+ * @param mixed $e any object.
+ * @param Callable $cb invoke for each leaf. signature is ($currentElement, $index, $parentObject) (similar to js:Array.foreach())
+ * @param mixed $i index/property name of $e in the parent structure (node above)
+ * @param null $parent
+ */
+function traverseRecursively($e, $cb, $i = null, $parent=null) {
+	$children = [];
+	if (is_scalar($e)) {
+		$cb($e, $i, $parent);
+	}
+	elseif (is_array($e)) {
+		$children = $e;
+	}
+	elseif (is_object($e)) {
+		$children = get_object_vars($e);
+	}
+
+	foreach ($children as $i => $ee) {
+		traverseRecursively($ee, $cb, $i, $e);
+	}
+
+}
