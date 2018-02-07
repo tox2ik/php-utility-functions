@@ -104,6 +104,14 @@ function expectPostParameters() {
     }
 }
 
+function expectSessionParameters() {
+    foreach (func_get_args() as $e) {
+        if (is_array($e)) { foreach($e as $ii => $ee) expectSessionParameters($ee); }
+        else { if (!isset($_SESSION[$e])) $_SESSION[$e] = null; }
+    }
+}
+
+
 if (! function_exists('jsonDecode')) {
     /**
      * @param string $json
@@ -203,7 +211,13 @@ function ini_get_upload_size() {
 
 
 function serverProtocolHost($protocolRelative = false) {
-    $p = @$_SERVER['REQUEST_SCHEME'];
+    $p = null;
+    switch ($_SESSION['SERVER_SOFTWARE']) {
+        case 'Apache': $p = @$_SERVER['REQUEST_SCHEME']; break;
+        case 'LiteSpeed': $p = substr($_SERVER['SCRIPT_URI'], 0, strpos($_SERVER['SCRIPT_URI'], ':')); break;
+    }
+
+    $p = isset($p) ? $p : 'http';
     $host = @$_SERVER['HTTP_HOST'];
     $proto = $protocolRelative ? '//' : "$p://";
     return "$proto$host";
