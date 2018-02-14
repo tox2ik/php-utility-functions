@@ -1,8 +1,8 @@
 {
     "name": "tox2ik/php-utility-functions",
-    "description": "Functions that I seem to need in many projects",
+    "description": "Random helpers.",
     "type": "utility",
-    "license": "public-domain",
+    "license": "FSFUL",
     "authors": [
         {
             "name": "jaroslav",
@@ -11,6 +11,9 @@
     ],
     "minimum-stability": "dev",
     "require": {},
+    "suggest": {
+	    "adambrett/shell-wrapper": "install version ^0.8.0+ to use new(Cmd('git'))->action('commit')->run()"
+    },
     "autoload": {
        "files": [
 	   "src/tox2ik-util-functions.php"

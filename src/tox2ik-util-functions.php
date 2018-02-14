@@ -160,17 +160,17 @@ function assert2($assertion, $expectation) {
  * @param $reportIfSuccess boolean write to the log even if exit status is 0.
  */
 function execWithReport($shellCommand, $reportIfSuccess = false) {
-	$output = array();
-	exec($shellCommand, $output, $exitCode);
-	if ($exitCode != 0 || $reportIfSuccess) {
-		$outLines = implode("\n", $output);
-		$failed = $exitCode == 0 ? '' : ' failed';
-		$out = "Command$failed: $shellCommand";
-		if ($outLines) {
-			$out .= "\nOutput;\n$outLines";
-		}
-		error_log($out);
-	}
+    $output = array();
+    exec($shellCommand, $output, $exitCode);
+    if ($exitCode != 0 || $reportIfSuccess) {
+        $outLines = implode("\n", $output);
+        $failed = $exitCode == 0 ? '' : ' failed';
+        $out = "Command$failed: $shellCommand";
+        if ($outLines) {
+            $out .= "\nOutput;\n$outLines";
+        }
+        error_log($out);
+    }
 }
 
 /**
@@ -210,6 +210,22 @@ function ini_get_upload_size() {
 }
 
 
+/**
+ * @param string $path e.g /foo/bar
+ * @param bool $protocolrelative exclude https*:
+ * @return string the name of this host.
+ *
+ */
+function serverName($path, $protocolrelative = false) {
+    return serverProtocolHost($protocolrelative) . $path;
+}
+
+/**
+ * tested on Apache
+ *
+ * @param bool $protocolRelative exclude https*: from the url
+ * @return string e.g. http://tidsrapportering.no
+ */
 function serverProtocolHost($protocolRelative = false) {
     $p = null;
     switch ($_SESSION['SERVER_SOFTWARE']) {
