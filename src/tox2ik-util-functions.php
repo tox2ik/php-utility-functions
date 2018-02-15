@@ -228,7 +228,7 @@ function serverName($path, $protocolrelative = false) {
  */
 function serverProtocolHost($protocolRelative = false) {
     $p = null;
-    switch ($_SESSION['SERVER_SOFTWARE']) {
+    switch (@$_SESSION['SERVER_SOFTWARE']) {
         case 'Apache': $p = @$_SERVER['REQUEST_SCHEME']; break;
         case 'LiteSpeed': $p = substr($_SERVER['SCRIPT_URI'], 0, strpos($_SERVER['SCRIPT_URI'], ':')); break;
     }
