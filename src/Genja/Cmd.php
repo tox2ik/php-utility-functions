@@ -9,6 +9,7 @@ use AdamBrett\ShellWrapper\Command\Param;
 use AdamBrett\ShellWrapper\Command\SubCommand;
 use AdamBrett\ShellWrapper\Runners\ReturnValue;
 use AdamBrett\ShellWrapper\Runners\Runner;
+use ReflectionClass;
 
 /**
  * Run a command in the OS and report if it failed.
@@ -30,6 +31,15 @@ class Cmd extends Command\AbstractCommand implements Runner, ReturnValue {
     public $exitCode;
     public $output;
 
+    /**
+     * @return Cmd
+     */
+    public static function gi()
+    {
+        return (new ReflectionClass(get_called_class()))->newInstanceArgs(func_get_args());
+
+    }
+
     public function __construct($command = null, $alwaysLog = false)
     {
         $this->alwaysLog = $alwaysLog;
@@ -42,6 +52,9 @@ class Cmd extends Command\AbstractCommand implements Runner, ReturnValue {
         return new Cmd($binaryPath);
     }
 
+    /**
+     * @return string ready-to-run command (escaped)
+     */
     public function __toString()
     {
         return (string) $this->command;
@@ -63,23 +76,39 @@ class Cmd extends Command\AbstractCommand implements Runner, ReturnValue {
         return $this;
     }
 
+    /**
+     * @param $flag
+     * @param null $value
+     * @return $this
+     */
     public function option($flag, $value = null)
     {
         $this->command->addFlag(new Flag($flag, $value));
         return $this;
     }
 
+    /**
+     * @param $arg
+     * @return $this
+     */
     public function argument($arg)
     {
         $this->command->addParam(new Param($arg));
         return $this;
     }
 
+    /**
+     * @return int exit code
+     */
     public function getReturnValue()
     {
         return $this->exitCode;
     }
 
+    /**
+     * Redirect standard-error to standard-out
+     * @return Cmd
+     */
     public function err2std()
     {
         return $this->action('2>&1');
@@ -113,4 +142,6 @@ class Cmd extends Command\AbstractCommand implements Runner, ReturnValue {
             error_log($out);
         }
     }
+
+
 }
