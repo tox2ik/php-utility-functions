@@ -44,7 +44,39 @@ function array_reindex($input, $keyName = 'id') {
 		$out[$i] = $e;
 	}
 	return $out;
+}
 
+/**
+ * extract a single property.
+ *
+ * This is intended to replace "boring" code like this:
+ *
+ *    $remoteGroupIds = [];
+ *    foreach ($gg->data as $e) {
+ *        $remoteGroupIds[$e->code] = $e->id;
+ *    }
+ *
+ * @param array|Traversable $input collection
+ * @param string $extractProperty
+ * @param null $indexWith us another property as key in the resulting array (or 0, 1, 2, ...)
+ * @return array
+ *
+ */
+function array_pluck($input, $extractProperty = 'id', $indexWith = null) {
+    $i = null;
+    $iso = false;
+    $isa = false;
+    $out = array();
+    foreach ($input as $e) {
+        if ($isa or is_array($e)) { $i = $e[$extractProperty]; $isa = true; }
+        if ($iso or is_object($e)) { $i = $e->{$extractProperty}; $iso = true; }
+        if ($indexWith) {
+            $out[$isa ? $e[$indexWith] : $e->{$indexWith}] = $i;
+        } else {
+            $out[] = $i;
+        }
+    }
+    return $out;
 }
 
 
@@ -89,6 +121,7 @@ function expectRequestParameters() {
         else { if (!isset($_REQUEST[$e])) $_REQUEST[$e] = null; }
     }
 }
+
 
 function expectGetParameters() {
     foreach (func_get_args() as $e) {
