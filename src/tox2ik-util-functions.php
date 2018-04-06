@@ -146,15 +146,19 @@ function expectSessionParameters() {
 
 
 if (! function_exists('jsonDecode')) {
-    /**
-     * @param string $json
-     * @return mixed
-     */
-    function jsonDecode($json) {
+	/**
+	 * @param string $json
+	 * @param array $errors populated with errors if detected
+	 *
+	 * @return mixed
+	 */
+    function jsonDecode($json, & $errors = []) {
         $result = json_decode($json);
         if (!empty($json) && $result === null && json_last_error() != JSON_ERROR_NONE) {
-            error_log(sprintf( '%s: Error while decoding; %s', __FUNCTION__, json_last_error()));
+            error_log(sprintf( '%s: Error while decoding; %s', __FUNCTION__, json_last_error_msg()));
+            $errors[] = json_last_error_msg();
         }
+        return $result;
     }
 }
 
