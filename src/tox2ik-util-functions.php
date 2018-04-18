@@ -149,11 +149,14 @@ if (! function_exists('jsonDecode')) {
 	/**
 	 * @param string $json
 	 * @param array $errors populated with errors if detected
+	 * @param bool $assoc [optional] return as array/dictionary
+	 * @param int $depth [optional] User specified recursion depth.
+	 * @param int $options See json_decode (JSON_BIGINT_AS_STRING)
 	 *
 	 * @return mixed
 	 */
-    function jsonDecode($json, & $errors = []) {
-        $result = json_decode($json);
+    function jsonDecode($json, & $errors = [], $assoc = false, $depth = 512, $options = 0) {
+        $result = json_decode($json, $assoc, $depth, $options);
         if (!empty($json) && $result === null && json_last_error() != JSON_ERROR_NONE) {
             error_log(sprintf( '%s: Error while decoding; %s', __FUNCTION__, json_last_error_msg()));
             $errors[] = json_last_error_msg();
