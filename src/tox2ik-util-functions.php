@@ -297,5 +297,18 @@ function traverseRecursively($e, $cb, $i = null, $parent=null) {
 	foreach ($children as $i => $ee) {
 		traverseRecursively($ee, $cb, $i, $e);
 	}
+}
 
+
+if (! function_exists('startsWith')) {
+    function startsWith($haystack, $needle) {
+        return substr($haystack, 0, strlen($needle)) === $needle;
+    }
+}
+
+if (! function_exists('endsWith')) {
+    function endsWith($haystack, $needle) {
+        $length = strlen($needle);
+        return $length === 0 || (substr($haystack, -$length) === $needle);
+    }
 }
