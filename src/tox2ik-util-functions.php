@@ -34,16 +34,16 @@ function checkbox_boolean($parameter) {
  * array_reindex({0: {a.i:x}, 1: {a.i:y}, 2: {a.i:z} }, 'i') => {x: {a.i:x}, y: {a.i:y}, z: {a.i:z} }
  */
 function array_reindex($input, $keyName = 'id') {
-	$i = null;
-	$iso = false;
-	$isa = false;
-	$out = array();
-	foreach ($input as $e) {
-		if ($isa or is_array($e)) { $i = $e[$keyName]; $isa = true; }
-		if ($iso or is_object($e)) { $i = $e->{$keyName}; $iso = true; }
-		$out[$i] = $e;
-	}
-	return $out;
+    $i = null;
+    $iso = false;
+    $isa = false;
+    $out = array();
+    foreach ($input as $e) {
+        if ($isa or is_array($e)) { $i = $e[$keyName]; $isa = true; }
+        if ($iso or is_object($e)) { $i = $e->{$keyName}; $iso = true; }
+        $out[$i] = $e;
+    }
+    return $out;
 }
 
 /**
@@ -87,12 +87,12 @@ function array_pluck($input, $extractProperty = 'id', $indexWith = null) {
  * @return bool|DateTime false if unable to parse.
  */
 function createDateTimeFromIso8601Format($isoDate, $dtZone = null) {
-	static $defaultZone;
+    static $defaultZone;
     if ($dtZone == null) {
         if ($defaultZone == null) {
-			$defaultZone = new \DateTimeZone(date_default_timezone_get());
-		}
-		$dtZone = $defaultZone;
+            $defaultZone = new \DateTimeZone(date_default_timezone_get());
+        }
+        $dtZone = $defaultZone;
     }
     $format = array(
         'Y-m-d\TH:i:s.uP', // js: (new Date).toISOString()
@@ -146,15 +146,15 @@ function expectSessionParameters() {
 
 
 if (! function_exists('jsonDecode')) {
-	/**
-	 * @param string $json
-	 * @param array $errors populated with errors if detected
-	 * @param bool $assoc [optional] return as array/dictionary
-	 * @param int $depth [optional] User specified recursion depth.
-	 * @param int $options See json_decode (JSON_BIGINT_AS_STRING)
-	 *
-	 * @return mixed
-	 */
+    /**
+     * @param string $json
+     * @param array $errors populated with errors if detected
+     * @param bool $assoc [optional] return as array/dictionary
+     * @param int $depth [optional] User specified recursion depth.
+     * @param int $options See json_decode (JSON_BIGINT_AS_STRING)
+     *
+     * @return mixed
+     */
     function jsonDecode($json, & $errors = [], $assoc = false, $depth = 512, $options = 0) {
         $result = json_decode($json, $assoc, $depth, $options);
         if (!empty($json) && $result === null && json_last_error() != JSON_ERROR_NONE) {
@@ -182,7 +182,7 @@ function jPretty($e) {
  * Append mtime to a file path or a "local" url
  */
 function amtime($url) {
-	return \Genja\Caching\RevisionResource::modifyUrlWithMtime($url);
+    return \Genja\Caching\RevisionResource::modifyUrlWithMtime($url);
 }
 
 
@@ -286,20 +286,20 @@ function serverProtocolHost($protocolRelative = false) {
  * @param null $parent
  */
 function traverseRecursively($e, $cb, $i = null, $parent=null) {
-	$children = [];
-	if (is_scalar($e)) {
-		$cb($e, $i, $parent);
-	}
-	elseif (is_array($e)) {
-		$children = $e;
-	}
-	elseif (is_object($e)) {
-		$children = get_object_vars($e);
-	}
+    $children = [];
+    if (is_scalar($e)) {
+        $cb($e, $i, $parent);
+    }
+    elseif (is_array($e)) {
+        $children = $e;
+    }
+    elseif (is_object($e)) {
+        $children = get_object_vars($e);
+    }
 
-	foreach ($children as $i => $ee) {
-		traverseRecursively($ee, $cb, $i, $e);
-	}
+    foreach ($children as $i => $ee) {
+        traverseRecursively($ee, $cb, $i, $e);
+    }
 }
 
 
