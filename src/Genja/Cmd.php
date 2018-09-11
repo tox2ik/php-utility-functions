@@ -2,49 +2,44 @@
 
 namespace Genja;
 
-use AdamBrett\ShellWrapper\Command;
-use AdamBrett\ShellWrapper\Command\Argument;
-use AdamBrett\ShellWrapper\Command\Flag;
-use AdamBrett\ShellWrapper\Command\Param;
-use AdamBrett\ShellWrapper\Command\SubCommand;
-use AdamBrett\ShellWrapper\Runners\ReturnValue;
-use AdamBrett\ShellWrapper\Runners\Runner;
 use ReflectionClass;
 
 /**
  * Run a command in the OS and report if it failed.
  *
- * maybe-todo: enforce order
+ * Inspired by the over-engineered https://github.com/adambrett/php-shell-wrapper
  *
- *   (new Cmd('zecho', 1))
- *       ->action('render')
- *       ->option('V')
- *       ->long('help')
- *       ->argument('./tmp file.xls')
- *       ->action('2>&1')
- *       ->run();
+ * The arguments, options and sub commands are ordered.
  */
-class Cmd extends Command\AbstractCommand implements Runner, ReturnValue {
+class Cmd
+{
 
+    public $parts = [];
     protected $alwaysLog;
     public $command;
     public $exitCode;
     public $output;
 
     /**
-     * @return Cmd
+     * @return Cmd|object
      */
     public static function gi()
     {
+        try {
+
         return (new ReflectionClass(get_called_class()))->newInstanceArgs(func_get_args());
+        } catch (\Exception $e) {
+            return new Cmd;
+        }
+
+
 
     }
 
     public function __construct($command = null, $alwaysLog = false)
     {
-        $this->alwaysLog = $alwaysLog;
-        parent::__construct($command);
-        $this->command = new Command($command);
+        $this->command = (string) $command;
+        $this->parts = [];
     }
 
     public function __invoke($binaryPath)
@@ -57,7 +52,12 @@ class Cmd extends Command\AbstractCommand implements Runner, ReturnValue {
      */
     public function __toString()
     {
-        return (string) $this->command;
+        foreach ($this->parts as $i => $e) {
+            $this->parts[$i] = (string) $e;
+        }
+        $args = join(' ', $this->parts);
+        return "$this->command $args";
+
     }
 
     /**
@@ -66,13 +66,20 @@ class Cmd extends Command\AbstractCommand implements Runner, ReturnValue {
      */
     public function action($subCommand)
     {
-        $this->command->addSubCommand(new SubCommand($subCommand));
+        $this->parts[] = escapeshellcmd((string) $subCommand);
         return $this;
     }
 
     public function long($option, $value = null)
     {
-        $this->command->addArgument(new Argument($option, $value));
+        $this->parts[]= "--$option";
+        $values = [];
+        if (! is_array($value) && $value !== null) {
+            $values = [ $value ];
+        }
+        foreach ($values as $e) {
+            $this->parts[] = escapeshellarg($e);
+        }
         return $this;
     }
 
@@ -83,7 +90,25 @@ class Cmd extends Command\AbstractCommand implements Runner, ReturnValue {
      */
     public function option($flag, $value = null)
     {
-        $this->command->addFlag(new Flag($flag, $value));
+        $this->parts[]= strpos($flag, '+') === 0 ? $flag : "-$flag";
+        $values = [];
+        if (! is_array($value) && $value !== null) {
+            $values = [ $value ];
+        }
+        foreach ($values as $e) {
+            $this->parts[] = escapeshellarg($e);
+        }
+        return $this;
+    }
+
+    /**
+     * @param $flag
+     * @param null $value
+     * @return $this
+     */
+    public function short($flag, $value = null)
+    {
+        $this->option($flag, $value);
         return $this;
     }
 
@@ -93,7 +118,7 @@ class Cmd extends Command\AbstractCommand implements Runner, ReturnValue {
      */
     public function argument($arg)
     {
-        $this->command->addParam(new Param($arg));
+        $this->parts[] = escapeshellarg($arg);
         return $this;
     }
 
@@ -118,9 +143,10 @@ class Cmd extends Command\AbstractCommand implements Runner, ReturnValue {
      * @param Command\CommandInterface|null $command
      * @param bool $alwaysLog write output to error log even if command succeeded
      */
-    public function run(Command\CommandInterface $command = null, $alwaysLog = false)
+    public function run($alwaysLog = false)
     {
-        $this->execWithReport((string) $this->command ?: $command, $alwaysLog || $this->alwaysLog);
+        $this->execWithReport((string) $this, $alwaysLog || $this->alwaysLog);
+        return $this;
     }
 
     /**

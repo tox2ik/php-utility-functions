@@ -12,7 +12,6 @@
     "minimum-stability": "dev",
     "require": {},
     "suggest": {
-	    "adambrett/shell-wrapper": "install version ^0.8.0+ to use new(Cmd('git'))->action('commit')->run()"
     },
     "autoload": {
        "files": [
