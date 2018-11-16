@@ -103,7 +103,7 @@ function createDateTimeFromIso8601Format($isoDate, $dtZone = null) {
         \DateTime::ISO8601,
     );
 
-    while (! $date = \DateTime::createFromFormat(array_shift($format), $isoDate, $dtZone)) {}
+    while (! $date = \DateTime::createFromFormat(array_shift($format), $isoDate, $dtZone)) { true; }
     return $date;
 }
 
@@ -200,6 +200,7 @@ function assert2($assertion, $expectation) {
  * @param $reportIfSuccess boolean write to the log even if exit status is 0.
  */
 function execWithReport($shellCommand, $reportIfSuccess = false) {
+
     $output = array();
     exec($shellCommand, $output, $exitCode);
     if ($exitCode != 0 || $reportIfSuccess) {
@@ -211,6 +212,7 @@ function execWithReport($shellCommand, $reportIfSuccess = false) {
         }
         error_log($out);
     }
+    return implode("\n", $output);
 }
 
 /**

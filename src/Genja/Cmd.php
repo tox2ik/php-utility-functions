@@ -15,10 +15,11 @@ class Cmd
 {
 
     public $parts = [];
-    protected $alwaysLog;
+    public $alwaysLog;
     public $command;
     public $exitCode;
     public $output;
+    protected $redirectErrToStdout = null;
 
     /**
      * @return Cmd|object
@@ -55,9 +56,17 @@ class Cmd
         foreach ($this->parts as $i => $e) {
             $this->parts[$i] = (string) $e;
         }
-        $args = join(' ', $this->parts);
-        return "$this->command $args";
+        $arguments = join(' ', $this->parts);
+        $binaryPath = escapeshellcmd($this->command);
+        $redirect = $this->redirectErrToStdout ? "$this->redirectErrToStdout " : '';
+        return "$redirect $binaryPath $arguments";
 
+    }
+
+    public function command($path)
+    {
+        $this->command = $path;
+        return $this;
     }
 
     /**
@@ -136,7 +145,10 @@ class Cmd
      */
     public function err2std()
     {
-        return $this->action('2>&1');
+        $this->redirectErrToStdout = '2>&1';
+        return $this;
+
+        //return $this->action();
     }
 
     /**
