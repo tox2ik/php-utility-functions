@@ -32,6 +32,8 @@ function checkbox_boolean($parameter) {
 /**
  * Reindex all values on a key from same array.
  * array_reindex({0: {a.i:x}, 1: {a.i:y}, 2: {a.i:z} }, 'i') => {x: {a.i:x}, y: {a.i:y}, z: {a.i:z} }
+ *
+ * @See array_column
  */
 function array_reindex($input, $keyName = 'id') {
     $i = null;
@@ -103,7 +105,8 @@ function createDateTimeFromIso8601Format($isoDate, $dtZone = null) {
         \DateTime::ISO8601,
     );
 
-    while (! $date = \DateTime::createFromFormat(array_shift($format), $isoDate, $dtZone)) { true; }
+    $e = true;
+    while ($e && ! $date = \DateTime::createFromFormat($e = array_shift($format), $isoDate, $dtZone)) { true; }
     return $date;
 }
 
@@ -315,5 +318,11 @@ if (! function_exists('endsWith')) {
     function endsWith($haystack, $needle) {
         $length = strlen($needle);
         return $length === 0 || (substr($haystack, -$length) === $needle);
+    }
+}
+
+if (! function_exists('pbin')) {
+    function pbin($v) {
+        return str_pad(decbin($v), 32, 0, STR_PAD_LEFT);
     }
 }

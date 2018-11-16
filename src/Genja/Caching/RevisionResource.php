@@ -62,6 +62,7 @@ Class RevisionResource
      * e.g:
      *
      *     wp_enqueue_style(dashboard, UWF::mTime(http://mw24.no//dashboard/foo.css))
+     *     wp_register_script('lhf-sheets', amtime(plugins_url('/src/js/lhf-sheets.js', __FILE__))); (may fail in subdirs)
      *     =>
      *     <link rel=style href=http://mw24.no//dashboard/foo.1438609214.css
      *
