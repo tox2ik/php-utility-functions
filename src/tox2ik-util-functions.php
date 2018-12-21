@@ -88,25 +88,36 @@ function array_pluck($input, $extractProperty = 'id', $indexWith = null) {
  * @param null $dtZone create date with this timezone. Fall back to default if not specified.
  * @return bool|DateTime false if unable to parse.
  */
-function createDateTimeFromIso8601Format($isoDate, $dtZone = null) {
+function createDateTimeFromIso8601Format($isoDate, $dtZone = null, $additionalFormats = []) {
+    static $formats = array(
+        'Y-m-d\TH:i:s.uT', // js: (new Date).toISOString()
+        'Y-m-d\TH:i:s.u',
+        'Y-m-d\TH:i:sP',
+        'Y-m-d\TH:i:s',
+        DATE_ATOM,
+        \DateTime::ISO8601,
+        'Y-m-d\TH:i:s.ue',
+        'Y-m-d\TH:i:s.uO',
+        'Y-m-d\TH:i:s.uP',
+    );
     static $defaultZone;
+    if  (is_array($additionalFormats)) {
+        $formats = array_merge($formats, $additionalFormats);
+    }
     if ($dtZone == null) {
         if ($defaultZone == null) {
             $defaultZone = new \DateTimeZone(date_default_timezone_get());
         }
         $dtZone = $defaultZone;
     }
-    $format = array(
-        'Y-m-d\TH:i:s.uP', // js: (new Date).toISOString()
-        'Y-m-d\TH:i:s.u',
-        'Y-m-d\TH:i:sP',
-        'Y-m-d\TH:i:s',
-        DATE_ATOM,
-        \DateTime::ISO8601,
-    );
-
-    $e = true;
-    while ($e && ! $date = \DateTime::createFromFormat($e = array_shift($format), $isoDate, $dtZone)) { true; }
+    $date = false;
+    foreach($formats as $fmt ) {
+        $clearstring = trim(filter_var($isoDate, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH));
+        $date = \DateTime::createFromFormat($fmt, $clearstring, $dtZone);
+        if ($date) {
+            break;
+        }
+    }
     return $date;
 }
 
