@@ -1,86 +1,90 @@
 <?php
 
-/**
- * Convert a submitted checkbox to a boolean.
- */
 if (!function_exists('checkbox_boolean')) {
-function checkbox_boolean($parameter) {
-    if (is_bool($parameter)) return $parameter;
-    if (is_object($parameter)) return count(get_object_vars($parameter)) !== 0;
-    if (is_array($parameter)) return count($parameter) !== 0;
-    if (is_numeric($parameter)) { return (boolean) $parameter; }
-    $p = is_string($parameter) ? strtolower($parameter) : $parameter;
+    /**
+     * Convert a submitted checkbox to a boolean.
+     */
+    function checkbox_boolean($parameter) {
+        if (is_bool($parameter)) return $parameter;
+        if (is_object($parameter)) return count(get_object_vars($parameter)) !== 0;
+        if (is_array($parameter)) return count($parameter) !== 0;
+        if (is_numeric($parameter)) { return (boolean) $parameter; }
+        $p = is_string($parameter) ? strtolower($parameter) : $parameter;
 
-    switch ($p) {
-        case 'yes';
-        case 'on';
-        case 'true';
+        switch ($p) {
+            case 'yes';
+            case 'on';
+            case 'true';
             return true;
             break;
 
-        case null;
-        case 'no';
-        case 'off';
-        case 'false';
+            case null;
+            case 'no';
+            case 'off';
+            case 'false';
             return false;
             break;
-    }
-    return false;
-}
-}
-
-/**
- * Reindex all values on a key from same array.
- * array_reindex({0: {a.i:x}, 1: {a.i:y}, 2: {a.i:z} }, 'i') => {x: {a.i:x}, y: {a.i:y}, z: {a.i:z} }
- *
- * @See array_column
- */
-function array_reindex($input, $keyName = 'id') {
-    $i = null;
-    $iso = false;
-    $isa = false;
-    $out = array();
-    foreach ($input as $e) {
-        if ($isa or is_array($e)) { $i = $e[$keyName]; $isa = true; }
-        if ($iso or is_object($e)) { $i = $e->{$keyName}; $iso = true; }
-        $out[$i] = $e;
-    }
-    return $out;
-}
-
-/**
- * extract a single property.
- *
- * This is intended to replace "boring" code like this:
- *
- *    $remoteGroupIds = [];
- *    foreach ($gg->data as $e) {
- *        $remoteGroupIds[$e->code] = $e->id;
- *    }
- *
- * @param array|Traversable $input collection
- * @param string $extractProperty
- * @param null $indexWith us another property as key in the resulting array (or 0, 1, 2, ...)
- * @return array
- *
- */
-function array_pluck($input, $extractProperty = 'id', $indexWith = null) {
-    $i = null;
-    $iso = false;
-    $isa = false;
-    $out = array();
-    foreach ($input as $e) {
-        if ($isa or is_array($e)) { $i = $e[$extractProperty]; $isa = true; }
-        if ($iso or is_object($e)) { $i = $e->{$extractProperty}; $iso = true; }
-        if ($indexWith) {
-            $out[$isa ? $e[$indexWith] : $e->{$indexWith}] = $i;
-        } else {
-            $out[] = $i;
         }
+        return false;
     }
-    return $out;
 }
 
+if (!function_exists('array_reindex')) {
+    /**
+     * Reindex all values on a key from same array.
+     * array_reindex({0: {a.i:x}, 1: {a.i:y}, 2: {a.i:z} }, 'i') => {x: {a.i:x}, y: {a.i:y}, z: {a.i:z} }
+     *
+     * @See array_column
+     */
+    function array_reindex($input, $keyName = 'id') {
+        $i = null;
+        $iso = false;
+        $isa = false;
+        $out = array();
+        foreach ($input as $e) {
+            if ($isa or is_array($e)) { $i = $e[$keyName]; $isa = true; }
+            if ($iso or is_object($e)) { $i = $e->{$keyName}; $iso = true; }
+            $out[$i] = $e;
+        }
+        return $out;
+    }
+}
+
+
+if (! function_exists('array_pluck')) { 
+    /**
+     * extract a single property.
+     *
+     * This is intended to replace "boring" code like this:
+     *
+     *    $remoteGroupIds = [];
+     *    foreach ($gg->data as $e) {
+     *        $remoteGroupIds[$e->code] = $e->id;
+     *    }
+     *
+     * @param array|Traversable $input collection
+     * @param string $extractProperty
+     * @param null $indexWith us another property as key in the resulting array (or 0, 1, 2, ...)
+     * @return array
+     *
+     */
+    function array_pluck($input, $extractProperty = 'id', $indexWith = null) {
+        $i = null;
+        $iso = false;
+        $isa = false;
+        $out = array();
+        foreach ($input as $e) {
+            if ($isa or is_array($e)) { $i = $e[$extractProperty]; $isa = true; }
+            if ($iso or is_object($e)) { $i = $e->{$extractProperty}; $iso = true; }
+            if ($indexWith) {
+                $out[$isa ? $e[$indexWith] : $e->{$indexWith}] = $i;
+            } else {
+                $out[] = $i;
+            }
+        }
+        return $out;
+    }
+}
 
 /**
  * Parse variations of ISO8601 strings.
